@@ -3,7 +3,8 @@ import type { Grade, Trophy } from '../types';
 import { chapterIndexOf, isTrophyRevealed, missedTrophies, score } from '../lib/navigator';
 import type { TabProps } from './GameScreen';
 import { Check, Cup, GRADE_LABEL, Lock } from './Icons';
-import { HintLadder } from './ui';
+import { trophyLinks } from '../lib/links';
+import { ExternalHelp, HintLadder } from './ui';
 
 type Filter = 'open' | 'missable' | 'earned' | 'all';
 const FILTERS: { id: Filter; label: string }[] = [
@@ -141,6 +142,7 @@ function TrophyRow({
           ) : (
             <>
               <HintLadder id={t.id} hints={t.hints} progress={p} onReveal={actions.reveal} />
+              <ExternalHelp links={trophyLinks(game, t)} />
               {missed && t.recovery && <p className="small warn-text">{t.recovery}</p>}
             </>
           )}

@@ -1,5 +1,7 @@
 import { chapterName, collectedInChapter, collectedTotal, trophyById } from '../lib/navigator';
 import type { TabProps } from './GameScreen';
+import { textFragmentUrl } from '../lib/links';
+import { External } from './Icons';
 import { Bar, Counter, TrophyChip } from './ui';
 
 export function CollectTab({ game, progress: p, actions }: TabProps) {
@@ -32,12 +34,30 @@ export function CollectTab({ game, progress: p, actions }: TabProps) {
                 <span className="chip chip-ok">jederzeit nachholbar</span>
               )}
             </div>
+            {game.links?.collectibleGuide && (
+              <p className="small muted">
+                Das Symbol <External size={13} /> neben einer {game.chapterNoun} öffnet die Fundorte bei{' '}
+                {game.links.collectibleGuide.source}, direkt an der richtigen Stelle.
+              </p>
+            )}
             <ul className="collect-list">
               {chapters.map(({ c, i, n }) => (
                 <li key={c.id} className={i === p.chapterIndex ? 'collect-current' : i > p.chapterIndex ? 'collect-future' : undefined}>
                   <span>
                     {chapterName(game, i, p)}
                     {i === p.chapterIndex && <span className="here">hier</span>}
+                    {game.links?.collectibleGuide && (
+                      <a
+                        className="icon-link"
+                        href={textFragmentUrl(game.links.collectibleGuide.url, c.label)}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Fundorte ${c.label} bei ${game.links.collectibleGuide.source}`}
+                        title={`Fundorte bei ${game.links.collectibleGuide.source}`}
+                      >
+                        <External size={15} />
+                      </a>
+                    )}
                   </span>
                   <Counter
                     value={collectedInChapter(p, c.id, type.id)}

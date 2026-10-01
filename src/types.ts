@@ -77,6 +77,8 @@ export interface Step {
   title: string;
   hints: Hint[];
   trophyIds?: string[];
+  /** Handverlesene Links, z. B. ein Video mit Zeitmarke. */
+  links?: ExternalLink[];
   /**
    * Auch im Entspannt-Modus zeigen. Verpassbares und Point-of-no-Return
    * wird immer gezeigt, egal was hier steht.
@@ -101,6 +103,29 @@ export interface CollectibleType {
   trophyId?: string;
   /** Kann ein Sammelobjekt endgültig verloren gehen? */
   missable: boolean;
+}
+
+/**
+ * Verweis auf externe Hilfe (Guide-Abschnitt, Video). Wir zeigen nur den
+ * Link, nie den fremden Inhalt.
+ */
+export interface ExternalLink {
+  kind: 'guide' | 'video';
+  /** Anbieter, z. B. „PowerPyx“ oder „YouTube“. */
+  source: string;
+  label: string;
+  url: string;
+}
+
+/**
+ * Aus diesen Angaben baut die App passende Links pro Trophäe und Kapitel.
+ * Guide-Links springen per Textmarke (#:~:text=…) direkt zur richtigen Stelle.
+ */
+export interface LinkSources {
+  trophyGuide?: { source: string; url: string };
+  collectibleGuide?: { source: string; url: string };
+  /** Spielname für die Video-Suche, z. B. „Marvel's Wolverine“. */
+  videoQuery?: string;
 }
 
 export interface GameMeta {
@@ -142,6 +167,7 @@ export interface Game {
   phases: Phase[];
   collectibles: CollectibleType[];
   sources: SourceRef[];
+  links?: LinkSources;
   /** Hinweis, der im Spiel angezeigt wird (z. B. Demo-Daten). */
   dataNote?: string;
 }

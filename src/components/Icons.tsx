@@ -120,3 +120,20 @@ export const Link = ({ size, className }: P) => (
     <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
   </svg>
 );
+export const Play = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <rect x="2" y="5" width="20" height="14" rx="3" />
+    <path d="M10 9.5v5l4.5-2.5L10 9.5Z" fill="currentColor" />
+  </svg>
+);
+export const Book = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14Z" />
+    <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" />
+  </svg>
+);
+export const External = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+  </svg>
+);

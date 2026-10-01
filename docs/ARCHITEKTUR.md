@@ -67,6 +67,24 @@ Guide-Texte, Roadmaps, Screenshots und Videos von PowerPyx, PSNProfiles, PlaySta
 | **Link-out** | Details, Karten, Videos | Jede Quelle mit `usage: 'link'` wird nur verlinkt. Das bringt den Original-Seiten Traffic statt ihn wegzunehmen. |
 | **Trophäenlisten** | Namen, Beschreibungen, Stufen, Seltenheit | Sony bietet keine offene, offizielle Trophäen-API. Community-Bibliotheken (z. B. `psn-api`) nutzen die Endpunkte der PlayStation-App mit dem Token des Nutzers. Für den Abgleich der *eigenen* Trophäen ist das verbreitet, rechtlich aber eine Grauzone. Vor dem Launch prüfen. |
 
+### Das Verlink-Modell (im Prototyp umgesetzt)
+
+Die App trennt **Gerüst** und **Details**:
+
+| | Was | Woher |
+|---|---|---|
+| **Gerüst** | Kapitel, welche Trophäe wo, was verpassbar ist, Points of No Return, Anzahl Sammelobjekte pro Kapitel, spoilerfreie Kurz-Hinweise | Eigene Fakten: aus *mehreren* öffentlichen Quellen zusammengetragen und selbst formuliert, später automatisch aus Trophäen-Zeitstempel. Kein Durchspielen nötig. |
+| **Details** | Genaue Fundorte, Screenshots, Videos | **Verlinkt, nicht kopiert.** Die Navigation entscheidet, *wann* sie *wohin* verweist. |
+
+Umsetzung ([`src/lib/links.ts`](../src/lib/links.ts)):
+
+- Pro Spiel stehen in `links` die Guide-Seiten (`trophyGuide`, `collectibleGuide`) und der Name für die Video-Suche.
+- **Guide-Links springen per Textmarke** (`#:~:text=Blindsided`) direkt zur passenden Trophäe oder Mission und markieren sie. Das unterstützen Chrome, Edge, Safari und Firefox. Gibt es keinen Treffer, öffnet sich die Seite oben.
+- **Videos:** im Prototyp eine YouTube-Suche. Später handverlesene Videos mit Zeitmarke (`Step.links`, `videoAtUrl`), z. B. von der Community vorgeschlagen.
+- Links zu **versteckten Trophäen** erscheinen erst, wenn die Trophäe aufgedeckt ist. Alle Links liegen eingeklappt unter „Mehr Hilfe“ mit dem Hinweis, dass fremde Seiten keinen Spoiler-Schutz haben.
+
+Fremde Guide-Inhalte in die eigenen Schritte zu übernehmen, auch umformuliert, ist nur mit Erlaubnis möglich, also über eine Partnerschaft.
+
 **Empfehlung für den Start:** Eigene Redaktion für wenige grosse Releases, Link-out für Details und parallel Gespräche mit 1–2 Guide-Seiten über eine Partnerschaft.
 
 ### Die Pipeline

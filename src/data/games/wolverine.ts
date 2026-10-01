@@ -669,9 +669,15 @@ export const wolverine: Game = {
       trophyIds: ['level36', 'armory', 'helix', 'spiral', 'parry'],
     },
   ],
+  links: {
+    trophyGuide: { source: 'PowerPyx', url: 'https://www.powerpyx.com/marvels-wolverine-trophy-guide-roadmap/' },
+    collectibleGuide: { source: 'PowerPyx', url: 'https://www.powerpyx.com/marvels-wolverine-all-collectible-locations-guide/' },
+    videoQuery: "Marvel's Wolverine",
+  },
   sources: [
     { name: 'PowerPyx: Trophy Guide & Roadmap', url: 'https://www.powerpyx.com/marvels-wolverine-trophy-guide-roadmap/', usage: 'link' },
-    { name: 'PSNProfiles: Trophäenliste', url: 'https://psnprofiles.com/', usage: 'link' },
+    { name: 'PowerPyx: Fundorte aller Sammelobjekte', url: 'https://www.powerpyx.com/marvels-wolverine-all-collectible-locations-guide/', usage: 'link' },
+    { name: 'YouTube: Video-Anleitungen (Suche)', url: 'https://www.youtube.com/results?search_query=Marvel%27s+Wolverine+trophy+guide', usage: 'link' },
     { name: 'Platinpfad-Redaktion (Hinweise)', usage: 'own' },
   ],
   dataNote:

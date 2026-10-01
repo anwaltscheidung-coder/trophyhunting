@@ -84,6 +84,15 @@ export function validateGame(game: Game): string[] {
     if (n !== 1) err(`${t.id}: steht in ${n} Phasen (erwartet: genau 1)`);
   }
 
+  const urls = [
+    game.links?.trophyGuide?.url,
+    game.links?.collectibleGuide?.url,
+    ...game.steps.flatMap((s) => (s.links ?? []).map((l) => l.url)),
+  ].filter((u): u is string => u !== undefined);
+  for (const u of urls) {
+    if (!u.startsWith('https://')) err(`Link ohne https: ${u}`);
+  }
+
   const missables = game.trophies.filter((t) => t.missable).length;
   if (missables !== game.meta.missableCount) {
     err(`meta.missableCount ist ${game.meta.missableCount}, verpassbar sind aber ${missables}`);
