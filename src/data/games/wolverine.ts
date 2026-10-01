@@ -1,0 +1,679 @@
+import type { Chapter, Game, Trophy } from '../../types';
+
+/**
+ * DUMMY-DATEN für Marvel's Wolverine (PS5, September 2026).
+ *
+ * Belastbar sind nur die Eckdaten aus öffentlichen Übersichten: 42 Trophäen
+ * (1 Platin, 4 Gold, 9 Silber, 28 Bronze), 30 Missionen, nichts verpassbar,
+ * Missionsauswahl nach der zweiten Albtraum-Tür, 68 Materialkisten,
+ * 20 Whisky-Flaschen, 14 Albtraum-Türen.
+ *
+ * Ein Teil der Trophäennamen stammt aus diesen Listen. Die übrigen Namen,
+ * die Verteilung auf Missionen und alle Hinweistexte sind Platzhalter, die
+ * zeigen sollen, wie die App funktioniert. Nicht ungeprüft veröffentlichen.
+ */
+
+const MISSIONS = 30;
+
+/** Sammelobjekte pro Mission (Platzhalter-Verteilung, Summen stimmen). */
+const CRATES: Record<number, number> = {
+  2: 3, 3: 4, 4: 4, 5: 3, 6: 4, 8: 3, 10: 4, 11: 3, 12: 4, 14: 3,
+  15: 4, 16: 3, 18: 4, 20: 3, 21: 4, 22: 3, 24: 3, 25: 3, 26: 3, 27: 3,
+};
+const BOTTLES: Record<number, number> = {
+  3: 1, 4: 1, 5: 1, 6: 1, 8: 1, 10: 1, 11: 1, 12: 2, 14: 1, 15: 1,
+  16: 1, 18: 1, 20: 1, 21: 1, 22: 1, 24: 1, 25: 1, 26: 1, 27: 1,
+};
+const DOORS: Record<number, number> = {
+  2: 1, 4: 1, 6: 1, 8: 1, 10: 1, 12: 1, 14: 1, 16: 1, 18: 1, 20: 1,
+  22: 1, 24: 1, 26: 1, 27: 1,
+};
+
+const m = (n: number) => `m${n}`;
+
+const chapters: Chapter[] = Array.from({ length: MISSIONS }, (_, i) => {
+  const n = i + 1;
+  const collectibles: Record<string, number> = {};
+  if (CRATES[n]) collectibles.crate = CRATES[n];
+  if (BOTTLES[n]) collectibles.bottle = BOTTLES[n];
+  if (DOORS[n]) collectibles.door = DOORS[n];
+  return {
+    id: m(n),
+    number: n,
+    label: `Mission ${n}`,
+    act: n <= 9 ? 'Akt I' : n <= 19 ? 'Akt II' : 'Akt III',
+    collectibles: Object.keys(collectibles).length ? collectibles : undefined,
+  };
+});
+
+/** Story-Trophäe: versteckt, Beschreibung nennt nur die Mission. */
+const story = (
+  id: string,
+  name: string,
+  mission: number,
+  grade: Trophy['grade'] = 'bronze',
+  rarity = 80,
+): Trophy => ({
+  id,
+  name,
+  description: `Schliesse Mission ${mission} ab.`,
+  grade,
+  hidden: true,
+  category: 'story',
+  missable: false,
+  availableFrom: m(mission),
+  hints: [{ level: 1, text: 'Kommt automatisch, wenn du der Story folgst.' }],
+  rarity,
+});
+
+const trophies: Trophy[] = [
+  {
+    id: 'plat',
+    name: 'Best There Is',
+    description: 'Erhalte alle anderen Trophäen.',
+    grade: 'platinum',
+    hidden: false,
+    category: 'misc',
+    missable: false,
+    hints: [{ level: 1, text: 'Kommt automatisch, sobald alle anderen Trophäen geholt sind.' }],
+    rarity: 4.1,
+  },
+
+  // Story (17)
+  story('s01', 'Old Habits', 1, 'bronze', 97.2),
+  story('s03', 'Snikt', 3, 'bronze', 93.5),
+  story('s05', 'Scent of Trouble', 5, 'bronze', 88.0),
+  story('s07', 'Healing Factor', 7, 'bronze', 84.1),
+  story('s09', 'End of the Beginning', 9, 'silver', 79.6),
+  story('s11', 'Familiar Faces', 11, 'bronze', 72.3),
+  story('s13', "No Man's Land", 13, 'bronze', 66.8),
+  story('s15', 'Bad Company', 15, 'bronze', 61.0),
+  story('s17', 'Bloodlines', 17, 'bronze', 57.4),
+  story('s19', 'Halfway Down', 19, 'silver', 53.9),
+  story('s21', 'Far From Home', 21, 'bronze', 49.2),
+  story('s23', 'Ronin', 23, 'bronze', 45.5),
+  story('s25', 'The Long Night', 25, 'bronze', 42.0),
+  story('s27', 'Unfinished Business', 27, 'bronze', 39.8),
+  story('s28', 'Last Stand', 28, 'bronze', 38.7),
+  story('s29', 'Through Hell', 29, 'silver', 37.9),
+  {
+    ...story('s30', 'One More Story', 30, 'gold', 36.4),
+    description: 'Schliesse die Hauptgeschichte ab.',
+  },
+
+  // Sammelobjekte
+  {
+    id: 'waking',
+    name: 'Waking Nightmare',
+    description: 'Entdecke eine Albtraum-Tür in der Spielwelt.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'collectible',
+    missable: false,
+    availableFrom: m(2),
+    hints: [
+      { level: 1, text: 'Halte abseits des Hauptwegs nach etwas Ausschau, das nicht in die Umgebung passt.' },
+      { level: 2, text: 'Die erste Albtraum-Tür liegt in Mission 2, kurz nach dem ersten grossen Kampf, in einer Seitenhöhle.' },
+    ],
+    rarity: 90.4,
+  },
+  {
+    id: 'doors',
+    name: 'Pathways of the Mind',
+    description: 'Entdecke alle Albtraum-Türen.',
+    grade: 'silver',
+    hidden: false,
+    category: 'collectible',
+    missable: false,
+    availableFrom: m(2),
+    hints: [
+      { level: 1, text: 'Es gibt 14 Albtraum-Türen. Die Sammeln-Ansicht zeigt dir, in welchen Missionen noch welche fehlen.' },
+      { level: 2, text: 'Nach der zweiten Tür ist die Missionsauswahl frei. Fehlende Türen holst du am bequemsten nach der Story.' },
+    ],
+    rarity: 21.3,
+  },
+  {
+    id: 'bottle1',
+    name: 'Bottoms Up',
+    description: 'Finde eine Whisky-Flasche.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'collectible',
+    missable: false,
+    availableFrom: m(3),
+    hints: [{ level: 1, text: 'Whisky-Flaschen glitzern leicht. In Mission 3 liegt die erste.' }],
+    rarity: 85.0,
+  },
+  {
+    id: 'bottles',
+    name: 'Liquid Courage',
+    description: 'Finde alle 20 Whisky-Flaschen.',
+    grade: 'silver',
+    hidden: false,
+    category: 'collectible',
+    missable: false,
+    availableFrom: m(3),
+    hints: [
+      { level: 1, text: 'Die Flaschen verteilen sich auf 19 Missionen. Abhaken in der Sammeln-Ansicht.' },
+      { level: 2, text: 'Die Witterung (Feral Sense) hebt Flaschen in der Nähe hervor. Benutze sie in jedem neuen Gebiet einmal.' },
+    ],
+    rarity: 19.8,
+  },
+  {
+    id: 'crates25',
+    name: 'Scavenger',
+    description: 'Öffne 25 Materialkisten.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'collectible',
+    missable: false,
+    availableFrom: m(2),
+    hints: [{ level: 1, text: 'Kommt beim normalen Spielen fast von allein.' }],
+    rarity: 70.2,
+  },
+  {
+    id: 'crates',
+    name: 'Salvage Expert',
+    description: 'Öffne alle 68 Materialkisten.',
+    grade: 'silver',
+    hidden: false,
+    category: 'collectible',
+    missable: false,
+    availableFrom: m(2),
+    hints: [
+      { level: 1, text: 'Kisten stehen oft in Sackgassen. Wenn ein Weg „zu nichts“ führt, schau genauer hin.' },
+      { level: 2, text: 'Am effizientesten: nach der Story Mission für Mission per Missionsauswahl mit der Sammeln-Liste.' },
+    ],
+    rarity: 18.1,
+  },
+
+  // Kampf
+  {
+    id: 'suitup',
+    name: 'Suit Up',
+    description: 'Stelle deinen ersten Anzug her.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'progression',
+    missable: false,
+    availableFrom: m(2),
+    hints: [
+      { level: 1, text: 'Wirf einen Blick ins Ausrüstungsmenü, sobald du ein paar Kisten geöffnet hast.' },
+      { level: 2, text: 'Menü → Anzüge → ersten freigeschalteten Anzug herstellen.' },
+    ],
+    rarity: 91.5,
+  },
+  {
+    id: 'kebab',
+    name: 'Shish Kebab',
+    description: 'Spiesse einen Gegner an einer Umgebungsgefahr auf.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'combat',
+    missable: false,
+    availableFrom: m(3),
+    hints: [
+      { level: 1, text: 'Die Umgebung ist eine Waffe. Achte auf alles Spitze.' },
+      { level: 2, text: 'Packe einen Gegner und wirf ihn gegen Stacheln oder Haken an der Wand.' },
+    ],
+    rarity: 76.0,
+  },
+  {
+    id: 'berserk',
+    name: 'Berserker Unleashed',
+    description: 'Verfalle in Berserker-Wut.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'combat',
+    missable: false,
+    availableFrom: m(6),
+    hints: [
+      { level: 1, text: 'Die Wut-Leiste ist nicht nur Anzeige.' },
+      { level: 2, text: 'Leiste voll laufen lassen, dann die Berserker-Wut auslösen.' },
+    ],
+    rarity: 88.9,
+  },
+  {
+    id: 'blind',
+    name: 'Blindsided',
+    description: 'Schalte 10 geblendete Gegner lautlos aus.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'combat',
+    missable: false,
+    availableFrom: m(8),
+    hints: [
+      { level: 1, text: 'In Mission 8 bekommst du Unterstützung. Gegner, die nichts sehen, sind leichte Beute.' },
+      { level: 2, text: 'Lass Gegner blenden und schalte sie lautlos aus. Zählt über mehrere Missionen.' },
+      { level: 3, text: 'Jean blendet Gegner mit ihren Kräften. 10 Stealth-Kills an geblendeten Gegnern.' },
+    ],
+    rarity: 55.7,
+  },
+  {
+    id: 'hothead',
+    name: 'Hot Head',
+    description: 'Erreiche Wut-Stufe 3.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'combat',
+    missable: false,
+    availableFrom: m(10),
+    hints: [
+      { level: 1, text: 'Die Wut lässt sich weiter steigern, wenn du nicht getroffen wirst.' },
+      { level: 2, text: 'Ohne Treffer weiterkämpfen, bis Stufe 3 erreicht ist. Am leichtesten gegen viele schwache Gegner.' },
+    ],
+    rarity: 62.4,
+  },
+  {
+    id: 'helix',
+    name: 'Cut Just As Deep',
+    description: 'Besiege 100 Gegner mit den Helix-Klauen.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'combat',
+    missable: false,
+    availableFrom: m(12),
+    hints: [
+      { level: 1, text: 'Neue Klauen-Technik ab Mission 12. Setz sie oft ein, die Kills summieren sich.' },
+      { level: 2, text: 'Wenn es nach der Story noch fehlt: eine gegnerreiche Mission wiederholen.' },
+    ],
+    rarity: 40.3,
+  },
+  {
+    id: 'spiral',
+    name: 'Spiral Cut',
+    description: 'Besiege 75 Gegner mit dem Tornado-Wirbel.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'combat',
+    missable: false,
+    availableFrom: m(14),
+    hints: [{ level: 1, text: 'Der Tornado-Wirbel räumt Gruppen ab. Benutze ihn, sobald drei oder mehr Gegner nah sind.' }],
+    rarity: 44.6,
+  },
+  {
+    id: 'parry',
+    name: 'Parry Perfected',
+    description: 'Pariere 500 Angriffe.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'combat',
+    missable: false,
+    availableFrom: m(1),
+    hints: [
+      { level: 1, text: 'Zählt das ganze Spiel über. Gewöhn dir das Parieren früh an.' },
+      { level: 2, text: '500 Paraden. Wer in jedem Kampf pariert, hat sie meist kurz nach der Story.' },
+    ],
+    rarity: 30.2,
+  },
+  {
+    id: 'nose',
+    name: "Hunter's Nose",
+    description: 'Verfolge 10 Fährten mit der Witterung.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'misc',
+    missable: false,
+    availableFrom: m(5),
+    hints: [{ level: 1, text: 'Wenn die Witterung eine Spur zeigt, folge ihr bis zum Ende.' }],
+    rarity: 58.0,
+  },
+  {
+    id: 'nottoday',
+    name: 'Not Today',
+    description: 'Erhole dich 10-mal mit dem Heilungsfaktor aus kritischem Zustand.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'combat',
+    missable: false,
+    availableFrom: m(7),
+    hints: [{ level: 1, text: 'Bei wenig Leben kurz aus dem Kampf gehen und heilen lassen. Kommt meist von allein.' }],
+    rarity: 64.9,
+  },
+  {
+    id: 'fivedown',
+    name: 'Five Down',
+    description: 'Besiege alle fünf benannten Bosse.',
+    grade: 'silver',
+    hidden: true,
+    category: 'story',
+    missable: false,
+    availableFrom: m(9),
+    hints: [{ level: 1, text: 'Kommt mit der Story. Die Bosse lassen sich per Missionsauswahl erneut spielen.' }],
+    rarity: 36.1,
+  },
+
+  // Fortschritt
+  {
+    id: 'adapt1',
+    name: 'Mutant Potential',
+    description: 'Schalte deine erste Anpassung frei.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'progression',
+    missable: false,
+    availableFrom: m(4),
+    hints: [{ level: 1, text: 'Das Anpassungsmenü öffnet sich nach Mission 4. Gleich einen Punkt verteilen.' }],
+    rarity: 89.7,
+  },
+  {
+    id: 'adapt10',
+    name: 'Secondary Mutations',
+    description: 'Erreiche Anpassungsstufe 10.',
+    grade: 'gold',
+    hidden: false,
+    category: 'progression',
+    missable: false,
+    availableFrom: m(4),
+    hints: [
+      { level: 1, text: 'Anpassungen steigen mit Albtraum-Prüfungen. Kein Grind während der Story nötig.' },
+      { level: 2, text: 'Meist erreicht, wenn alle Prüfungen mindestens Bronze haben.' },
+    ],
+    rarity: 15.5,
+  },
+  {
+    id: 'level36',
+    name: 'Old Soldier',
+    description: 'Erreiche Spielerstufe 36.',
+    grade: 'silver',
+    hidden: false,
+    category: 'progression',
+    missable: false,
+    availableFrom: m(1),
+    hints: [
+      { level: 1, text: 'Kommt mit Story, Sammelobjekten und Prüfungen. Grind erst am Schluss, falls nötig.' },
+      { level: 2, text: 'Falls am Ende Stufen fehlen: die Prüfung mit den meisten Gegnern wiederholen.' },
+    ],
+    rarity: 17.0,
+  },
+  {
+    id: 'armory',
+    name: 'Adamantium Armory',
+    description: 'Stelle genug Anzüge her, um die Gesundheit voll aufzuwerten.',
+    grade: 'gold',
+    hidden: false,
+    category: 'progression',
+    missable: false,
+    availableFrom: m(2),
+    hints: [
+      { level: 1, text: 'Jeder hergestellte Anzug erhöht dein Leben ein Stück. Material sparen lohnt sich nicht.' },
+      { level: 2, text: '20 Anzüge. Mit allen Materialkisten hast du genug Material.' },
+    ],
+    rarity: 16.8,
+  },
+
+  // Albtraum-Prüfungen
+  {
+    id: 'trials',
+    name: 'Nightmare Survivor',
+    description: 'Schliesse alle Albtraum-Prüfungen mit mindestens Bronze ab.',
+    grade: 'silver',
+    hidden: false,
+    category: 'misc',
+    missable: false,
+    availableFrom: m(2),
+    hints: [
+      { level: 1, text: 'Hinter jeder Albtraum-Tür wartet eine Prüfung. Bronze reicht für alle.' },
+      { level: 2, text: 'Erst Anzüge und Anpassungen aufwerten, dann die schweren Prüfungen angehen.' },
+    ],
+    rarity: 16.2,
+  },
+  {
+    id: 'adamantium',
+    name: 'Adamantium Dreams',
+    description: 'Erreiche Adamantium in einer beliebigen Albtraum-Prüfung.',
+    grade: 'bronze',
+    hidden: false,
+    category: 'misc',
+    missable: false,
+    availableFrom: m(2),
+    hints: [
+      { level: 1, text: 'Die erste Prüfung ist die leichteste. Dort lohnt sich ein Versuch auf die Bestwertung.' },
+      { level: 2, text: 'Nach ein paar Anzug-Upgrades zurückkehren, dann ist Adamantium gut machbar.' },
+    ],
+    rarity: 33.3,
+  },
+  {
+    id: 'memory',
+    name: 'Repressed Memories',
+    description: 'Schalte die verborgene Erinnerung in den Albtraum-Prüfungen frei.',
+    grade: 'gold',
+    hidden: true,
+    category: 'misc',
+    missable: false,
+    availableFrom: m(2),
+    hints: [
+      { level: 1, text: 'Wer alle Prüfungen abschliesst, wird belohnt.' },
+      { level: 2, text: 'Schaltet sich frei, sobald alle Prüfungen mindestens Bronze haben.' },
+    ],
+    rarity: 15.9,
+  },
+];
+
+export const wolverine: Game = {
+  id: 'marvels-wolverine',
+  title: "Marvel's Wolverine",
+  platforms: ['PS5'],
+  releaseDate: '2026-09-15',
+  cover: ['#e0b23a', '#1d3770'],
+  chapterNoun: 'Mission',
+  meta: {
+    difficulty: 2,
+    hours: '15–20',
+    playthroughs: 1,
+    missableCount: 0,
+    onlineTrophies: false,
+    difficultyTrophies: false,
+    chapterSelect: 'Missionsauswahl in der Albtraum-Hütte, sobald du die zweite Albtraum-Tür gefunden hast.',
+  },
+  chapters,
+  trophies,
+  collectibles: [
+    { id: 'crate', name: 'Materialkiste', plural: 'Materialkisten', total: 68, trophyId: 'crates', missable: false },
+    { id: 'bottle', name: 'Whisky-Flasche', plural: 'Whisky-Flaschen', total: 20, trophyId: 'bottles', missable: false },
+    { id: 'door', name: 'Albtraum-Tür', plural: 'Albtraum-Türen', total: 14, trophyId: 'doors', missable: false },
+  ],
+  steps: [
+    {
+      id: 'w-relax',
+      chapterId: m(1),
+      kind: 'tip',
+      relaxed: true,
+      title: 'Lehn dich zurück: Hier kannst du nichts verpassen',
+      hints: [
+        { level: 1, text: 'Keine verpassbaren Trophäen, keine Trophäen für Schwierigkeitsgrade. Spiel die Story so, wie es dir Spass macht.' },
+        { level: 2, text: 'Ab der zweiten Albtraum-Tür kannst du jede Mission wiederholen. Alles Liegengebliebene holst du später gemütlich nach.' },
+      ],
+    },
+    {
+      id: 'w-parry',
+      chapterId: m(1),
+      kind: 'trophy',
+      title: 'Gewöhn dir früh das Parieren an',
+      trophyIds: ['parry'],
+      hints: [
+        { level: 1, text: 'Eine Trophäe zählt Paraden über das ganze Spiel.' },
+        { level: 2, text: '500 Paraden. Wer von Anfang an pariert, muss später nicht grinden.' },
+      ],
+    },
+    {
+      id: 'w-door1',
+      chapterId: m(2),
+      kind: 'collectible',
+      relaxed: true,
+      title: 'Halte Ausschau nach einer seltsamen Tür',
+      trophyIds: ['waking'],
+      hints: [
+        { level: 1, text: 'Abseits des Hauptwegs wartet etwas, das nicht in diese Welt passt.' },
+        { level: 2, text: 'Nach dem ersten grossen Kampf links in die Seitenhöhle. Dort steht die erste Albtraum-Tür.' },
+      ],
+    },
+    {
+      id: 'w-suit',
+      chapterId: m(2),
+      kind: 'trophy',
+      relaxed: true,
+      title: 'Stell deinen ersten Anzug her',
+      trophyIds: ['suitup'],
+      hints: [
+        { level: 1, text: 'Ein Blick ins Ausrüstungsmenü lohnt sich, sobald du ein paar Kisten geöffnet hast.' },
+        { level: 2, text: 'Menü → Anzüge → ersten freigeschalteten Anzug herstellen.' },
+      ],
+    },
+    {
+      id: 'w-kebab',
+      chapterId: m(3),
+      kind: 'trophy',
+      title: 'Nutze die Umgebung als Waffe',
+      trophyIds: ['kebab'],
+      hints: [
+        { level: 1, text: 'In dieser Mission gibt es Kampfgebiete mit spitzen Hindernissen.' },
+        { level: 2, text: 'Gegner packen und gegen die Stacheln an der Hafenmauer werfen.' },
+      ],
+    },
+    {
+      id: 'w-door2',
+      chapterId: m(4),
+      kind: 'collectible',
+      relaxed: true,
+      title: 'Zweite Albtraum-Tür: schaltet die Missionsauswahl frei',
+      trophyIds: [],
+      hints: [
+        { level: 1, text: 'Auch in dieser Mission versteckt sich eine Albtraum-Tür. Danach kannst du jede Mission erneut spielen.' },
+        { level: 2, text: 'Die Missionsauswahl findest du danach in der Albtraum-Hütte. Ab dann ist wirklich nichts mehr verpassbar.' },
+      ],
+    },
+    {
+      id: 'w-adapt',
+      chapterId: m(4),
+      kind: 'trophy',
+      relaxed: true,
+      title: 'Verteile deinen ersten Anpassungspunkt',
+      trophyIds: ['adapt1'],
+      hints: [{ level: 1, text: 'Am Ende der Mission öffnet sich ein neues Menü. Gleich einen Punkt setzen.' }],
+    },
+    {
+      id: 'w-berserk',
+      chapterId: m(6),
+      kind: 'trophy',
+      relaxed: true,
+      title: 'Lass die Wut raus',
+      trophyIds: ['berserk'],
+      hints: [
+        { level: 1, text: 'Die Wut-Leiste ist nicht nur Anzeige.' },
+        { level: 2, text: 'Leiste voll laufen lassen, dann die Berserker-Wut auslösen.' },
+      ],
+    },
+    {
+      id: 'w-blind',
+      chapterId: m(8),
+      kind: 'trophy',
+      title: 'Neue Unterstützung: Geblendete Gegner lautlos ausschalten',
+      trophyIds: ['blind'],
+      hints: [
+        { level: 1, text: 'Ab jetzt kannst du Gegner blenden lassen. Nutze das für lautlose Kills.' },
+        { level: 2, text: '10 Stealth-Kills an geblendeten Gegnern. Zählt über mehrere Missionen.' },
+        { level: 3, text: 'Jean blendet Gegner mit ihren Kräften. Danach von hinten anschleichen.' },
+      ],
+    },
+    {
+      id: 'w-hothead',
+      chapterId: m(10),
+      kind: 'trophy',
+      title: 'Wut-Stufe 3 erreichen',
+      trophyIds: ['hothead'],
+      hints: [
+        { level: 1, text: 'Die Wut steigt weiter, solange du nicht getroffen wirst.' },
+        { level: 2, text: 'Die grosse Gegnerwelle am Ende der Mission ist ideal dafür.' },
+      ],
+    },
+    {
+      id: 'w-helix',
+      chapterId: m(12),
+      kind: 'trophy',
+      title: 'Neue Klauen-Technik oft einsetzen',
+      trophyIds: ['helix'],
+      hints: [{ level: 1, text: '100 Kills mit den Helix-Klauen. Sie summieren sich, wenn du sie zur Standardwaffe machst.' }],
+    },
+    {
+      id: 'w-spiral',
+      chapterId: m(14),
+      kind: 'trophy',
+      title: 'Tornado-Wirbel gegen Gruppen',
+      trophyIds: ['spiral'],
+      hints: [{ level: 1, text: '75 Kills mit dem Tornado-Wirbel. Immer einsetzen, wenn drei oder mehr Gegner nah sind.' }],
+    },
+    {
+      id: 'w-adamantium',
+      chapterId: m(16),
+      kind: 'trophy',
+      title: 'Versuch dich an einer Bestwertung',
+      trophyIds: ['adamantium'],
+      hints: [
+        { level: 1, text: 'Inzwischen bist du stark genug für Adamantium in der ersten Albtraum-Prüfung.' },
+        { level: 2, text: 'Albtraum-Hütte → Prüfung 1. Schnell und ohne viel Schaden durchspielen.' },
+      ],
+    },
+    {
+      id: 'w-grind',
+      chapterId: m(20),
+      kind: 'tip',
+      title: 'Kein Grind nötig, noch nicht',
+      hints: [
+        { level: 1, text: 'Stufe 36 und Anpassung 10 kommen fast von allein. Grind lohnt sich erst nach der Story.' },
+      ],
+    },
+    {
+      id: 'w-end',
+      chapterId: m(30),
+      kind: 'tip',
+      relaxed: true,
+      title: 'Nach dem Abspann: Aufräumen im eigenen Tempo',
+      hints: [
+        { level: 1, text: 'Glückwunsch! Jetzt geht es gemütlich weiter: Sammelobjekte, Prüfungen, letzte Zähler.' },
+        { level: 2, text: 'Die Route-Ansicht zeigt dir die Aufräum-Phase Schritt für Schritt.' },
+      ],
+    },
+  ],
+  phases: [
+    {
+      id: 'story',
+      title: 'Story spielen',
+      hours: '12–15 Std.',
+      summary: 'Alle 30 Missionen auf einem Schwierigkeitsgrad deiner Wahl. Sammelobjekte nimmst du mit, wenn sie am Weg liegen.',
+      trophyIds: [
+        's01', 's03', 's05', 's07', 's09', 's11', 's13', 's15', 's17', 's19', 's21', 's23', 's25',
+        's27', 's28', 's29', 's30', 'fivedown', 'suitup', 'kebab', 'berserk', 'blind', 'hothead',
+        'adapt1', 'waking', 'bottle1', 'crates25', 'nottoday', 'nose',
+      ],
+    },
+    {
+      id: 'cleanup',
+      title: 'Aufräumen per Missionsauswahl',
+      hours: '3–4 Std.',
+      summary: 'Mit der Sammeln-Liste Mission für Mission die fehlenden Kisten, Flaschen und Türen holen.',
+      trophyIds: ['crates', 'bottles', 'doors'],
+    },
+    {
+      id: 'trials',
+      title: 'Albtraum-Prüfungen',
+      hours: '1–2 Std.',
+      summary: 'Alle Prüfungen mit mindestens Bronze, eine davon mit Adamantium.',
+      trophyIds: ['trials', 'memory', 'adamantium', 'adapt10'],
+    },
+    {
+      id: 'finish',
+      title: 'Letzte Zähler',
+      hours: '0–2 Std.',
+      summary: 'Was dann noch fehlt: Stufe 36, Anzüge und Kill-Zähler. Meist ist das schon erledigt.',
+      trophyIds: ['level36', 'armory', 'helix', 'spiral', 'parry'],
+    },
+  ],
+  sources: [
+    { name: 'PowerPyx: Trophy Guide & Roadmap', url: 'https://www.powerpyx.com/marvels-wolverine-trophy-guide-roadmap/', usage: 'link' },
+    { name: 'PSNProfiles: Trophäenliste', url: 'https://psnprofiles.com/', usage: 'link' },
+    { name: 'Platinpfad-Redaktion (Hinweise)', usage: 'own' },
+  ],
+  dataNote:
+    'Demo-Daten: Eckdaten aus öffentlichen Übersichten, Missionszuordnung, einzelne Namen und alle Hinweise sind Platzhalter.',
+};
