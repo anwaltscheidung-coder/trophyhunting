@@ -33,8 +33,15 @@ export function App() {
   const [celebrate, setCelebrate] = useState<{ game: Game; trophy: Trophy } | null>(null);
   const toastId = useRef(0);
 
-  useEffect(() => saveAll(store), [store]);
-  useEffect(() => window.scrollTo(0, 0), [route]);
+  // Effekte mit Blockkörper: Ein Rückgabewert würde von React als Aufräum-
+  // Funktion aufgerufen. Neuere Chrome-Versionen geben bei scrollTo ein
+  // Promise zurück, das führte zu „TypeError: … is not a function“.
+  useEffect(() => {
+    saveAll(store);
+  }, [store]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [route]);
 
   const show = useCallback((msg: Omit<ToastMsg, 'id'>) => {
     toastId.current += 1;
