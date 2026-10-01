@@ -38,6 +38,7 @@ function sanitize(raw: Record<string, unknown>): GameProgress {
     earned: strings(raw.earned),
     doneSteps: strings(raw.doneSteps),
     collected: isObject(raw.collected) ? (raw.collected as GameProgress['collected']) : {},
+    items: strings(raw.items),
     revealed: isObject(raw.revealed) ? (raw.revealed as GameProgress['revealed']) : {},
     lastPlayed: typeof raw.lastPlayed === 'number' ? raw.lastPlayed : undefined,
   };

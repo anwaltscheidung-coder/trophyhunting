@@ -50,6 +50,71 @@ export interface Trophy {
   hints: Hint[];
   /** Anteil der Spieler mit dieser Trophäe in Prozent (Demo-Wert). */
   rarity?: number;
+  /** Ausführliche Anleitung für knifflige Trophäen. */
+  guide?: TrophyGuide;
+}
+
+/**
+ * Markierung auf einem Bild, in Prozent der Bildbreite und -höhe.
+ * So können wir auf jedem Screenshot die wichtige Stelle hervorheben.
+ */
+export interface ImageMark {
+  x: number;
+  y: number;
+  /** Radius in Prozent der Bildbreite. */
+  r?: number;
+  label?: string;
+}
+
+export interface GuideImage {
+  /** Bild-URL. Später vom eigenen Bildserver, nie direkt von der Partnerseite. */
+  src: string;
+  alt: string;
+  caption?: string;
+  /** Bildnachweis, z. B. „PowerPyx“. Pflicht bei Partner-Inhalten. */
+  credit?: string;
+  marks?: ImageMark[];
+  /** Bild zeigt Story-Inhalte und bleibt bis zum Antippen unscharf. */
+  spoiler?: boolean;
+}
+
+export interface GuideSection {
+  kind: 'step' | 'tip' | 'warning';
+  title?: string;
+  text: string;
+  images?: GuideImage[];
+  /** Abschnitt verrät Story-Inhalte. */
+  spoiler?: boolean;
+}
+
+export interface TrophyGuide {
+  /** Woher der Inhalt stammt. Partner-Inhalte werden immer genannt. */
+  source: { name: string; url?: string; usage: SourceRef['usage'] };
+  summary: string;
+  /** Geschätzter Aufwand, z. B. „ca. 20 Min.“ */
+  time?: string;
+  /** Wie knifflig ist die Trophäe selbst? 1–5 */
+  difficulty?: 1 | 2 | 3 | 4 | 5;
+  /** Was man vorher braucht oder erledigt haben sollte. */
+  prerequisites?: string[];
+  sections: GuideSection[];
+  /** Hinweis, solange der Inhalt Platzhalter ist. */
+  placeholder?: boolean;
+}
+
+/** Ein einzelnes Sammelobjekt mit Fundort und Bildern. */
+export interface CollectibleItem {
+  id: string;
+  typeId: string;
+  chapterId: string;
+  /** Nummer innerhalb des Kapitels, in Reihenfolge entlang des Wegs. */
+  number: number;
+  /** Stupser ohne genauen Ort. */
+  hint: string;
+  /** Genauer Fundort. */
+  location: string;
+  images?: GuideImage[];
+  credit?: string;
 }
 
 export interface Chapter {
@@ -168,6 +233,8 @@ export interface Game {
   collectibles: CollectibleType[];
   sources: SourceRef[];
   links?: LinkSources;
+  /** Einzelne Sammelobjekte mit Fundort (wo vorhanden). */
+  collectibleItems?: CollectibleItem[];
   /** Hinweis, der im Spiel angezeigt wird (z. B. Demo-Daten). */
   dataNote?: string;
 }
@@ -185,6 +252,8 @@ export interface GameProgress {
   doneSteps: string[];
   /** Schlüssel `${chapterId}:${collectibleTypeId}` → gefundene Anzahl. */
   collected: Record<string, number>;
+  /** Einzeln abgehakte Sammelobjekte (IDs aus game.collectibleItems). */
+  items: string[];
   /** Wie weit Hinweise aufgedeckt wurden: Schritt- oder Trophäen-ID → Stufe. */
   revealed: Record<string, HintLevel>;
   lastPlayed?: number;

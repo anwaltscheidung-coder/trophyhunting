@@ -156,3 +156,28 @@ describe('Spoiler-Schutz', () => {
     expect(visibleHintLevel(at(0, { spoiler: 'balanced' }), 'x')).toBe(2);
   });
 });
+
+describe('einzelne Sammelobjekte', () => {
+  it('hält den Kapitelzähler synchron', async () => {
+    const { toggleItem } = await import('./navigator');
+    let p = at(4);
+    p = toggleItem(kw, p, 'feather-k5-2');
+    p = toggleItem(kw, p, 'feather-k5-3');
+    expect(p.collected['k5:feather']).toBe(2);
+    p = toggleItem(kw, p, 'feather-k5-2');
+    expect(p.collected['k5:feather']).toBe(1);
+    expect(p.items).toEqual(['feather-k5-3']);
+  });
+
+  it('meldet abweichende Anzahl in der Datenprüfung', () => {
+    const broken = { ...kw, collectibleItems: kw.collectibleItems!.filter((it) => it.id !== 'feather-k5-3') };
+    expect(validateGame(broken)).toContain('kestrels-wake: k5:feather: 2 einzelne Sammelobjekte, laut Kapitel aber 3');
+  });
+
+  it('verlangt Bildnachweise bei Partner-Bildern', () => {
+    const t = wv.trophies.find((x) => x.id === 'adamantium')!;
+    const guide = { ...t.guide!, sections: t.guide!.sections.map((s) => ({ ...s, images: s.images?.map((i) => ({ ...i, credit: undefined })) })) };
+    const broken = { ...wv, trophies: wv.trophies.map((x) => (x.id === t.id ? { ...x, guide } : x)) };
+    expect(validateGame(broken)).toContain('marvels-wolverine: adamantium: Partner-Bild ohne Bildnachweis');
+  });
+});

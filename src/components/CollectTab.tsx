@@ -1,7 +1,6 @@
-import { chapterName, collectedInChapter, collectedTotal, trophyById } from '../lib/navigator';
+import { chapterName, collectedInChapter, collectedTotal, itemsIn, trophyById } from '../lib/navigator';
 import type { TabProps } from './GameScreen';
-import { textFragmentUrl } from '../lib/links';
-import { External } from './Icons';
+import { ItemList } from './ItemList';
 import { Bar, Counter, TrophyChip } from './ui';
 
 export function CollectTab({ game, progress: p, actions }: TabProps) {
@@ -34,37 +33,40 @@ export function CollectTab({ game, progress: p, actions }: TabProps) {
                 <span className="chip chip-ok">jederzeit nachholbar</span>
               )}
             </div>
-            {game.links?.collectibleGuide && (
-              <p className="small muted">
-                Das Symbol <External size={13} /> neben einer {game.chapterNoun} öffnet die Fundorte bei{' '}
-                {game.links.collectibleGuide.source}, direkt an der richtigen Stelle.
-              </p>
+            {chapters.some(({ c }) => itemsIn(game, c.id, type.id).length > 0) && (
+              <p className="small muted">Bei Kapiteln mit Pfeil kannst du jedes Objekt einzeln abhaken, mit Fundort und Bild.</p>
             )}
             <ul className="collect-list">
               {chapters.map(({ c, i, n }) => (
                 <li key={c.id} className={i === p.chapterIndex ? 'collect-current' : i > p.chapterIndex ? 'collect-future' : undefined}>
-                  <span>
-                    {chapterName(game, i, p)}
-                    {i === p.chapterIndex && <span className="here">hier</span>}
-                    {game.links?.collectibleGuide && (
-                      <a
-                        className="icon-link"
-                        href={textFragmentUrl(game.links.collectibleGuide.url, c.label)}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`Fundorte ${c.label} bei ${game.links.collectibleGuide.source}`}
-                        title={`Fundorte bei ${game.links.collectibleGuide.source}`}
-                      >
-                        <External size={15} />
-                      </a>
-                    )}
-                  </span>
-                  <Counter
-                    value={collectedInChapter(p, c.id, type.id)}
-                    max={n}
-                    label={`${type.plural} in ${c.label}`}
-                    onChange={(v) => actions.setCollected(c.id, type.id, Math.min(v, n))}
-                  />
+                  {itemsIn(game, c.id, type.id).length > 0 ? (
+                    <details className="collect-items" open={i === p.chapterIndex}>
+                      <summary>
+                        <span>
+                          {chapterName(game, i, p)}
+                          {i === p.chapterIndex && <span className="here">hier</span>}
+                        </span>
+                        <span className="num">
+                          {collectedInChapter(p, c.id, type.id)}
+                          <small>/{n}</small>
+                        </span>
+                      </summary>
+                      <ItemList game={game} progress={p} actions={actions} chapterId={c.id} type={type} />
+                    </details>
+                  ) : (
+                    <>
+                      <span>
+                        {chapterName(game, i, p)}
+                        {i === p.chapterIndex && <span className="here">hier</span>}
+                      </span>
+                      <Counter
+                        value={collectedInChapter(p, c.id, type.id)}
+                        max={n}
+                        label={`${type.plural} in ${c.label}`}
+                        onChange={(v) => actions.setCollected(c.id, type.id, Math.min(v, n))}
+                      />
+                    </>
+                  )}
                 </li>
               ))}
             </ul>

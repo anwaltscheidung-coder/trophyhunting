@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { gameById, games } from './data';
 import { demoProgress } from './data/demoProgress';
-import { newProgress, normalizeProgress, platinumTrophy, toggleEarned, trophyById } from './lib/navigator';
+import { newProgress, normalizeProgress, platinumTrophy, toggleEarned, toggleItem, trophyById } from './lib/navigator';
 import { loadAll, saveAll } from './lib/storage';
 import type { Game, GameProgress, HintLevel, Trophy } from './types';
 import { Celebration } from './components/Celebration';
@@ -18,6 +18,7 @@ export interface GameActions {
   reveal: (id: string, level: HintLevel) => void;
   setChapter: (index: number, announce?: boolean) => void;
   setCollected: (chapterId: string, typeId: string, n: number) => void;
+  toggleItem: (itemId: string) => void;
   reset: () => void;
 }
 
@@ -84,6 +85,7 @@ export function App() {
         update((p) => ({ ...p, chapterIndex: i }));
         if (announce) show({ kind: 'info', title: 'Weiter geht’s', text: game.chapters[i].label });
       },
+      toggleItem: (itemId) => update((p) => toggleItem(game, p, itemId)),
       setCollected: (chapterId, typeId, n) =>
         update((p) => ({ ...p, collected: { ...p.collected, [`${chapterId}:${typeId}`]: Math.max(0, n) } })),
       reset: () => {

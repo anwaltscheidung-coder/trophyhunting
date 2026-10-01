@@ -84,6 +84,40 @@ export function validateGame(game: Game): string[] {
     if (n !== 1) err(`${t.id}: steht in ${n} Phasen (erwartet: genau 1)`);
   }
 
+  // Einzelne Sammelobjekte: Anzahl pro Kapitel muss zum Zähler passen.
+  const items = game.collectibleItems ?? [];
+  dupes(items.map((it) => it.id), 'Sammelobjekt');
+  const itemCount = new Map<string, number>();
+  for (const it of items) {
+    if (!chapterIds.has(it.chapterId)) err(`Sammelobjekt ${it.id}: unbekanntes Kapitel ${it.chapterId}`);
+    if (!game.collectibles.some((c) => c.id === it.typeId)) err(`Sammelobjekt ${it.id}: unbekannter Typ ${it.typeId}`);
+    const key = `${it.chapterId}:${it.typeId}`;
+    itemCount.set(key, (itemCount.get(key) ?? 0) + 1);
+  }
+  for (const [key, n] of itemCount) {
+    const [chapterId, typeId] = key.split(':');
+    const expected = game.chapters.find((c) => c.id === chapterId)?.collectibles?.[typeId] ?? 0;
+    if (n !== expected) err(`${key}: ${n} einzelne Sammelobjekte, laut Kapitel aber ${expected}`);
+  }
+
+  // Bilder: Alt-Text immer, Bildnachweis bei Partner-Inhalten Pflicht.
+  const images = [
+    ...game.trophies.flatMap((t) =>
+      (t.guide?.sections ?? []).flatMap((s) => (s.images ?? []).map((img) => ({ img, licensed: t.guide?.source.usage === 'licensed', where: t.id }))),
+    ),
+    ...items.flatMap((it) => (it.images ?? []).map((img) => ({ img, licensed: false, where: it.id }))),
+  ];
+  for (const { img, licensed, where } of images) {
+    if (!img.alt.trim()) err(`${where}: Bild ohne Alt-Text`);
+    if (licensed && !img.credit) err(`${where}: Partner-Bild ohne Bildnachweis`);
+    for (const m of img.marks ?? []) {
+      if (m.x < 0 || m.x > 100 || m.y < 0 || m.y > 100) err(`${where}: Markierung ausserhalb des Bildes`);
+    }
+  }
+  for (const t of game.trophies) {
+    if (t.guide && t.guide.sections.length === 0) err(`${t.id}: Anleitung ohne Abschnitte`);
+  }
+
   const urls = [
     game.links?.trophyGuide?.url,
     game.links?.collectibleGuide?.url,

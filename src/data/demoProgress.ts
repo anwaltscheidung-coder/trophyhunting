@@ -31,6 +31,7 @@ export function demoProgress(): Record<string, GameProgress> {
       earned: ['k-first', 'k-feather1', 'k-ferry', 'k-vell', 'k-map'],
       doneSteps: ['k-intro', 'k-difficulty', 'k-beacon-k1', 'k-beacon-k2', 'k-beacon-k3', 'k-beacon-k4', 'k-letter-take'],
       collected: { 'k1:feather': 2, 'k2:feather': 4, 'k3:feather': 3, 'k4:feather': 5, 'k5:feather': 1 },
+      items: ['feather-k4-1', 'feather-k4-2', 'feather-k4-3', 'feather-k4-4', 'feather-k4-5', 'feather-k5-1'],
       lastPlayed: now - 1000 * 60 * 60 * 26,
     },
   };

@@ -28,6 +28,7 @@ export function newProgress(): GameProgress {
     earned: [],
     doneSteps: [],
     collected: {},
+    items: [],
     revealed: {},
   };
 }
@@ -292,4 +293,24 @@ export function isTrophyRevealed(game: Game, t: Trophy, p: GameProgress): boolea
   if (p.spoiler === 'strict') return false;
   const from = chapterIndexOf(game, t.availableFrom);
   return from !== -1 && from < p.chapterIndex;
+}
+
+/* ---------- Einzelne Sammelobjekte ---------- */
+
+export function itemsIn(game: Game, chapterId: string, typeId?: string) {
+  return (game.collectibleItems ?? [])
+    .filter((it) => it.chapterId === chapterId && (!typeId || it.typeId === typeId))
+    .sort((a, b) => a.number - b.number);
+}
+
+/**
+ * Sammelobjekt abhaken. Der Zähler des Kapitels folgt automatisch,
+ * damit Warnungen und Fortschritt weiter stimmen.
+ */
+export function toggleItem(game: Game, p: GameProgress, itemId: string): GameProgress {
+  const item = game.collectibleItems?.find((it) => it.id === itemId);
+  if (!item) return p;
+  const items = p.items.includes(itemId) ? p.items.filter((id) => id !== itemId) : [...p.items, itemId];
+  const count = itemsIn(game, item.chapterId, item.typeId).filter((it) => items.includes(it.id)).length;
+  return { ...p, items, collected: { ...p.collected, [`${item.chapterId}:${item.typeId}`]: count } };
 }

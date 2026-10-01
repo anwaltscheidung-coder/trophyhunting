@@ -12,6 +12,8 @@ Eine Web-App für Trophy Hunter und alle, die einfach nichts verpassen wollen. S
 - **Hinweise in drei Stufen:** Stupser → Konkret → Lösung, gesteuert über den Spoiler-Schutz
 - **Warnsystem:** verpassbare Trophäen, Points of No Return mit Checkliste, Nachfrage beim Kapitelwechsel
 - **Zwei Modi:** *Entspannt* (nur Verpassbares) und *Platin-Jagd* (alles)
+- **Anleitungen mit Bildern** für knifflige Trophäen: Schritte, Screenshots mit Markierungen, Tipps, Warnungen, Spoiler-Schutz
+- **Sammelobjekte einzeln abhaken**, mit Fundort und Bild
 - **Route, Trophäenliste, Sammelzähler,** Benachrichtigung „Trophäe freigeschaltet“ und Platin-Feier
 - **Zwei Demo-Spiele:**
   - *Marvel's Wolverine* (aktuell, keine Missables), Dummy-Daten
@@ -47,4 +49,6 @@ scripts/
 
 ## Wichtig zu den Daten
 
-Die Wolverine-Inhalte sind **Platzhalter**. Die Eckdaten stammen aus öffentlichen Übersichten, Hinweistexte und Missionszuordnung sind erfunden. Guide-Texte fremder Seiten (PowerPyx, PSNProfiles usw.) werden **nicht** übernommen. Wie Inhalte sauber und legal in die App kommen, steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md#datenbeschaffung).
+Die Wolverine-Inhalte sind **Platzhalter**. Die Eckdaten stammen aus öffentlichen Übersichten, Hinweistexte und Missionszuordnung sind erfunden. Die Anleitung zu „Adamantium Dreams“ zeigt den Aufbau. Ihre Texte und Bilder werden beim Import durch Inhalte aus dem PowerPyx-Guide ersetzt.
+
+PowerPyx hat der Nutzung seiner Guide-Inhalte mündlich zugestimmt. Vor dem ersten echten Import sollte das schriftlich festgehalten werden. Wie der Import funktioniert, steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md#import-aus-dem-partner-guide).

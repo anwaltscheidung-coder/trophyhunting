@@ -67,25 +67,34 @@ Guide-Texte, Roadmaps, Screenshots und Videos von PowerPyx, PSNProfiles, PlaySta
 | **Link-out** | Details, Karten, Videos | Jede Quelle mit `usage: 'link'` wird nur verlinkt. Das bringt den Original-Seiten Traffic statt ihn wegzunehmen. |
 | **Trophäenlisten** | Namen, Beschreibungen, Stufen, Seltenheit | Sony bietet keine offene, offizielle Trophäen-API. Community-Bibliotheken (z. B. `psn-api`) nutzen die Endpunkte der PlayStation-App mit dem Token des Nutzers. Für den Abgleich der *eigenen* Trophäen ist das verbreitet, rechtlich aber eine Grauzone. Vor dem Launch prüfen. |
 
-### Das Verlink-Modell (im Prototyp umgesetzt)
+### Partner-Inhalte direkt in der App (PowerPyx)
 
-Die App trennt **Gerüst** und **Details**:
+PowerPyx hat mündlich zugestimmt, dass wir die Inhalte der Guide-Seiten verwenden dürfen. **Vor dem ersten echten Import sollte das schriftlich festgehalten werden**: Texte *und* Bilder, kommerzielle Nutzung, Form der Quellenangabe, Umgang mit Aktualisierungen, Kündigung.
+
+Damit ändert sich die Aufteilung: Die Details stehen jetzt **in der App**, nicht mehr hinter einem Link.
 
 | | Was | Woher |
 |---|---|---|
-| **Gerüst** | Kapitel, welche Trophäe wo, was verpassbar ist, Points of No Return, Anzahl Sammelobjekte pro Kapitel, spoilerfreie Kurz-Hinweise | Eigene Fakten: aus *mehreren* öffentlichen Quellen zusammengetragen und selbst formuliert, später automatisch aus Trophäen-Zeitstempel. Kein Durchspielen nötig. |
-| **Details** | Genaue Fundorte, Screenshots, Videos | **Verlinkt, nicht kopiert.** Die Navigation entscheidet, *wann* sie *wohin* verweist. |
+| **Gerüst** | Kapitel, welche Trophäe wo, was verpassbar ist, Points of No Return | Partner-Guide, ergänzt durch eigene Fakten, später automatisch aus Trophäen-Zeitstempeln |
+| **Anleitung** (`Trophy.guide`) | Kurzfassung, Aufwand, Schwierigkeit, „Das brauchst du“, Schritte mit Screenshots, Tipps und Warnungen | Partner-Guide, in unsere Struktur übertragen |
+| **Fundorte** (`Game.collectibleItems`) | Jedes Sammelobjekt einzeln: Stupser, genauer Ort, Screenshot mit Markierung | Partner-Guide |
+| **Videos** | Nur noch Rückfallebene, wo es keine Anleitung gibt | YouTube-Suche ([`src/lib/links.ts`](../src/lib/links.ts)) |
 
-Umsetzung ([`src/lib/links.ts`](../src/lib/links.ts)):
+**Bilder** werden beim Import auf den **eigenen Bildserver** kopiert, nicht direkt von der Partnerseite geladen. Das ist schneller, belastet den Partner nicht und funktioniert weiter, wenn sich dort Adressen ändern. Jedes Partner-Bild trägt einen Bildnachweis (`credit`). `validateGame` lehnt Partner-Bilder ohne Nachweis ab.
 
-- Pro Spiel stehen in `links` die Guide-Seiten (`trophyGuide`, `collectibleGuide`) und der Name für die Video-Suche.
-- **Guide-Links springen per Textmarke** (`#:~:text=Blindsided`) direkt zur passenden Trophäe oder Mission und markieren sie. Das unterstützen Chrome, Edge, Safari und Firefox. Gibt es keinen Treffer, öffnet sich die Seite oben.
-- **Videos:** im Prototyp eine YouTube-Suche. Später handverlesene Videos mit Zeitmarke (`Step.links`, `videoAtUrl`), z. B. von der Community vorgeschlagen.
-- Links zu **versteckten Trophäen** erscheinen erst, wenn die Trophäe aufgedeckt ist. Alle Links liegen eingeklappt unter „Mehr Hilfe“ mit dem Hinweis, dass fremde Seiten keinen Spoiler-Schutz haben.
+**Markierungen** (`ImageMark`) legen wir selbst über die Screenshots: Kreis plus Beschriftung in Prozent-Koordinaten, damit sie auf jeder Bildschirmgrösse passen. So zeigt jedes Bild genau die Stelle, um die es geht.
 
-Fremde Guide-Inhalte in die eigenen Schritte zu übernehmen, auch umformuliert, ist nur mit Erlaubnis möglich, also über eine Partnerschaft.
+**Spoiler:** Abschnitte und Bilder können als Spoiler markiert werden. Sie bleiben unscharf bzw. verdeckt, bis man sie antippt, ausser der Spoiler-Schutz steht auf „Offen“.
 
-**Empfehlung für den Start:** Eigene Redaktion für wenige grosse Releases, Link-out für Details und parallel Gespräche mit 1–2 Guide-Seiten über eine Partnerschaft.
+### Import aus dem Partner-Guide
+
+1. **Abrufen** auf unserem Server (nicht in der App), mit erkennbarem User-Agent und zurückhaltender Frequenz. Am besten liefert der Partner die Inhalte direkt, etwa als Export oder Feed.
+2. **Zerlegen:** Trophäen-Abschnitte anhand der Trophäennamen erkennen, Sammelobjekt-Abschnitte anhand der Kapitel. Texte, Bilder und Bildunterschriften getrennt speichern.
+3. **Zuordnen:** Trophäen über den Namen auf unsere IDs abbilden, Bilder auf den eigenen Bildserver kopieren.
+4. **Strukturieren:** Eine KI macht daraus den Vorschlag für Kurzfassung, „Das brauchst du“, Schritte, Tipps und Warnungen. Dazu kommen die drei Hinweisstufen und die Spoiler-Markierungen. Ein Mensch prüft und setzt die Markierungen auf den Screenshots.
+5. **Prüfen** mit `validateGame` und **veröffentlichen**. Ändert der Partner seinen Guide, läuft der Import erneut, und Änderungen werden zur Freigabe angezeigt.
+
+Die HTML-Struktur der PowerPyx-Seiten konnte noch nicht analysiert werden, weil die Seite aus der bisherigen Entwicklungsumgebung nicht erreichbar war. Der Parser (Schritt 2) ist deshalb noch offen.
 
 ### Die Pipeline
 

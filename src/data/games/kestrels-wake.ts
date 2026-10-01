@@ -1,4 +1,50 @@
-import type { Chapter, Game, Step } from '../../types';
+import type { Chapter, CollectibleItem, Game, GuideImage, Step } from '../../types';
+import { scene, type SceneKind } from '../illustrations';
+
+const CREDIT = 'Illustration Platinpfad';
+
+const img = (kind: SceneKind, seed: number, alt: string, extra: Partial<GuideImage> = {}): GuideImage => ({
+  src: scene(kind, seed),
+  alt,
+  credit: CREDIT,
+  ...extra,
+});
+
+/** Federn einzeln, in Reihenfolge entlang des Wegs (Kapitel 4 und 5 ausgearbeitet). */
+const feather = (
+  chapterId: string,
+  number: number,
+  hint: string,
+  location: string,
+  image: GuideImage,
+): CollectibleItem => ({
+  id: `feather-${chapterId}-${number}`,
+  typeId: 'feather',
+  chapterId,
+  number,
+  hint,
+  location,
+  images: [image],
+});
+
+const featherItems: CollectibleItem[] = [
+  feather('k4', 1, 'Gleich am Stadttor, ganz oben', 'Oben auf dem Glockenturm neben dem Stadttor. Über das Gerüst an der Rückseite hochklettern.',
+    img('tower', 5, 'Glockenturm am Stadttor', { caption: 'Die Feder liegt im Glockenfenster.', marks: [{ x: 50, y: 49, r: 5, label: 'Feder' }] })),
+  feather('k4', 2, 'Zwischen Stoff und Fisch', 'Am Marktplatz unter dem blauen Sonnensegel, auf der Kiste hinter dem Tresen.',
+    img('market', 2, 'Marktplatz mit vier Ständen', { caption: 'Blauer Stand ganz links', marks: [{ x: 13, y: 72, r: 5, label: 'Feder' }] })),
+  feather('k4', 3, 'Ein Dach mit Ausblick', 'Auf dem Dach des Gasthauses „Zum Kormoran“, neben dem Schornstein. Über die Regenrinne an der Rückseite hoch.',
+    img('rooftops', 9, 'Dächer der Hafenstadt in der Dämmerung', { marks: [{ x: 55, y: 42, r: 5, label: 'Feder' }] })),
+  feather('k4', 4, 'Wo die Netze trocknen', 'Am Ende des Fischerstegs, hinter den Holzkisten.',
+    img('pier', 6, 'Fischersteg mit Kisten am Ende', { marks: [{ x: 82, y: 58, r: 5, label: 'Feder' }] })),
+  feather('k4', 5, 'Im Dunkeln zwischen Fässern', 'Im Lagerhaus am Hafen, oben auf dem Regal rechts. Die Leiter steht gleich daneben.',
+    img('warehouse', 3, 'Lagerhaus mit Kisten und Leiter', { marks: [{ x: 88, y: 37, r: 5, label: 'Feder' }] })),
+  feather('k5', 1, 'Bevor der Sturm richtig losgeht', 'Im Hinterhof der Schmiede, auf dem Wasserfass unter der Laterne.',
+    img('alley', 8, 'Dunkler Hinterhof mit Laterne und Fass', { marks: [{ x: 70, y: 73, r: 5, label: 'Feder' }] })),
+  feather('k5', 2, 'Hoch über dem Hafenviertel', 'Oben auf dem Kran am Pier. Erst die Kiste darunter verschieben, dann hochklettern.',
+    img('nightHarbor', 5, 'Hafen bei Nacht mit Kran', { marks: [{ x: 78, y: 28, r: 5, label: 'Feder' }] })),
+  feather('k5', 3, 'Kurz vor dem Tor', 'In der Nische hinter dem Laternenpfahl, rechts vor dem grossen Hafentor. Danach gibt es kein Zurück.',
+    img('nightHarbor', 9, 'Laternenpfahl am Hafen bei Nacht', { marks: [{ x: 39, y: 60, r: 5, label: 'Feder' }] })),
+];
 
 /**
  * FIKTIVES Testspiel. Es existiert nicht und dient nur dazu, die
@@ -196,6 +242,88 @@ export const kestrelsWake: Game = {
         { level: 2, text: 'Im Hafenviertel nicht entdeckt werden. Wirst du gesehen: sofort den letzten Checkpoint laden.' },
       ],
       rarity: 27.6,
+      guide: {
+        source: { name: 'Platinpfad-Beispiel (fiktives Spiel)', usage: 'own' },
+        summary: 'Das Hafenviertel durchqueren, ohne dass eine Wache Alarm schlägt. Mit dieser Route brauchst du keinen einzigen Kampf.',
+        time: 'ca. 15 Min.',
+        difficulty: 3,
+        prerequisites: [
+          'Vor dem Hafenviertel manuell speichern',
+          'Mindestens ein Wurfstein im Inventar (liegen am Fischmarkt)',
+          'Laterne ausschalten (Steuerkreuz unten)',
+        ],
+        sections: [
+          {
+            kind: 'step',
+            title: 'Die Route im Überblick',
+            text: 'Drei Wachen, drei Abschnitte. Grün ist der Start am Fischmarkt, Blau das Hafentor. Die roten Kegel zeigen, wohin die Wachen schauen.',
+            images: [
+              img('harborMap', 1, 'Karte des Hafenviertels mit Route und drei Wachen', {
+                caption: 'Gestrichelt: die sichere Route',
+                marks: [
+                  { x: 4, y: 67, r: 3.5, label: 'Start' },
+                  { x: 92, y: 67, r: 3.5, label: 'Ziel' },
+                ],
+              }),
+            ],
+          },
+          {
+            kind: 'step',
+            title: 'Am Fischmarkt hinter den Kisten bleiben',
+            text: 'Warte, bis die Wache mit der Laterne zum Brunnen schaut. Dann geduckt hinter der Kistenreihe nach rechts bis zur Hauswand.',
+            images: [
+              img('nightHarbor', 4, 'Kistenreihe im Dunkeln, dahinter eine Wache mit Laterne', {
+                caption: 'Hinter diesen Kisten sieht dich die Wache nicht.',
+                marks: [
+                  { x: 20, y: 79, r: 7, label: 'Deckung' },
+                  { x: 38, y: 44, r: 4, label: 'Wache' },
+                ],
+              }),
+            ],
+          },
+          {
+            kind: 'warning',
+            title: 'Nicht die Glocke berühren',
+            text: 'Der Glockenstrang am Lagerhaus löst Alarm aus, auch wenn dich niemand sieht. Geh links daran vorbei.',
+          },
+          {
+            kind: 'step',
+            title: 'Über die Dächer am Lagerhaus vorbei',
+            text: 'Die Leiter an der Rückseite des Lagerhauses führt aufs Dach. Oben über die Dachkante nach rechts und auf der anderen Seite wieder runter.',
+            images: [
+              img('rooftops', 7, 'Dächer des Hafenviertels in der Abenddämmerung', {
+                caption: 'Oben bleiben, bis die Dächer wieder abfallen.',
+                marks: [{ x: 50, y: 60, r: 6, label: 'Weg über die Dächer' }],
+              }),
+            ],
+          },
+          {
+            kind: 'step',
+            title: 'Am Pier ablenken',
+            text: 'Wirf einen Stein ins Wasser links vom Pier. Beide Wachen drehen sich um, und du hast etwa fünf Sekunden bis zum Tor.',
+            images: [
+              img('pier', 2, 'Holzpier am Wasser mit Segelboot', {
+                caption: 'Hierhin werfen, dann sofort rechts am Pier entlang.',
+                marks: [
+                  { x: 25, y: 74, r: 5, label: 'Wurfziel' },
+                  { x: 80, y: 64, r: 5, label: 'Weg' },
+                ],
+              }),
+            ],
+          },
+          {
+            kind: 'tip',
+            title: 'Doch gesehen worden?',
+            text: 'Sofort Menü → „Letzten Checkpoint laden“. Die Trophäe zählt nur, wenn nie Alarm ausgelöst wurde.',
+          },
+          {
+            kind: 'step',
+            title: 'Am Hafentor',
+            text: 'Hinter dem Tor wartet die Kapitänin mit ihrer Mannschaft. Die Trophäe kommt, sobald die Zwischensequenz beginnt.',
+            spoiler: true,
+          },
+        ],
+      },
     },
     {
       id: 'k-cliffs',
@@ -441,6 +569,7 @@ export const kestrelsWake: Game = {
       trophyIds: ['k-angler'],
     },
   ],
+  collectibleItems: featherItems,
   sources: [{ name: 'Fiktives Testspiel der Platinpfad-Redaktion', usage: 'own' }],
   dataNote: 'Fiktives Testspiel. Es zeigt, wie Platinpfad vor verpassbaren Trophäen warnt.',
 };

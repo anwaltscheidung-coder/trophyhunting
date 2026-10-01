@@ -47,7 +47,7 @@ Bibliothek ── Spiel ─┬─ Jetzt      ← Herzstück: der nächste Schrit
 - **Wo bin ich:** „Mission 8 von 30“ mit Vor/Zurück. Ein Tipp öffnet die Kapitelübersicht. Die zeigt nur Nummern und Warnsymbole, keine Namen.
 - **Point-of-No-Return-Banner:** Erscheint nur im betroffenen Kapitel und zeigt eine Checkliste: „Vorher noch offen: Brief zustellen, 3 Möwenfedern.“
 - **Nächster Schritt:** Eine grosse Karte. Verpassbares hat immer Vorrang, sonst gilt die Reihenfolge im Spiel. Dazu *Erledigt* und *Trophäe geholt*.
-- **Mehr Hilfe:** Eingeklappte Links, die direkt an die passende Stelle des Guides springen, dazu eine Video-Suche. Der Inhalt bleibt beim Guide-Autor, wir liefern den richtigen Moment.
+- **Anleitung mit Bildern:** Für knifflige Trophäen eine eigene Ansicht mit Kurzfassung, Aufwand, „Das brauchst du“, nummerierten Schritten mit Screenshots, Tipps und Warnungen. Auf den Screenshots markieren wir die wichtige Stelle. Spoiler-Abschnitte und -Bilder bleiben verdeckt, bis man sie antippt. Wo es noch keine Anleitung gibt, hilft eine Video-Suche.
 - **Auch in diesem Kapitel:** Weitere offene Punkte, eingeklappt.
 - **Sammelobjekte hier:** Plus/Minus-Zähler für genau dieses Kapitel.
 - **Vorschau ohne Spoiler:** „In den nächsten zwei Kapiteln kommt eine verpassbare Sache. Wir melden uns rechtzeitig.“ Genannt wird nur die Anzahl, kein Inhalt.
@@ -69,7 +69,7 @@ Bibliothek ── Spiel ─┬─ Jetzt      ← Herzstück: der nächste Schrit
 ### Sammeln
 - Pro Sammeltyp ein Gesamtzähler mit Kapitelaufschlüsselung.
 - Kennzeichnung *verpassbar nach Point of No Return* oder *jederzeit nachholbar*.
-- Neben jedem Kapitel ein Link zu den Fundorten im Guide, direkt an der richtigen Stelle.
+- **Jedes Objekt einzeln abhaken**, in der Reihenfolge entlang des Wegs: zugeklappt nur ein Stupser („Wo die Netze trocknen“), aufgeklappt der genaue Fundort und ein Screenshot mit Markierung. Der Kapitelzähler zählt automatisch mit.
 
 ## Spoiler-Schutz im Detail
 

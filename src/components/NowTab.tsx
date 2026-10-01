@@ -7,6 +7,7 @@ import {
   collectiblesAtRisk,
   currentChapter,
   isStepDone,
+  itemsIn,
   isTrophyRevealed,
   lostCollectibles,
   missedTrophies,
@@ -20,7 +21,9 @@ import {
 import type { Tab, TabProps } from './GameScreen';
 import { Alert, Check, ChevronLeft, ChevronRight, Coffee, Flag } from './Icons';
 import { chapterCollectibleLinks, stepLinks } from '../lib/links';
-import { Counter, ExternalHelp, HintLadder, KindChip, Sheet, TrophyChip, nounDativePlural, nounPlural } from './ui';
+import { GuideSheet } from './GuideSheet';
+import { ItemList } from './ItemList';
+import { Counter, ExternalHelp, GuideButton, HintLadder, KindChip, Sheet, TrophyChip, nounDativePlural, nounPlural } from './ui';
 
 function StepTrophies({ step, game, progress }: { step: Step } & Pick<TabProps, 'game' | 'progress'>) {
   const ts = (step.trophyIds ?? []).map((id) => trophyById(game, id)).filter((t) => t !== undefined);
@@ -34,7 +37,20 @@ function StepTrophies({ step, game, progress }: { step: Step } & Pick<TabProps, 
   );
 }
 
-function StepHelp({ step, game, progress }: { step: Step } & Pick<TabProps, 'game' | 'progress'>) {
+/**
+ * Hilfe zu einem Schritt: die Anleitung mit Bildern, wenn es eine gibt,
+ * sonst Video-Links als Rückfallebene.
+ */
+function StepHelp({
+  step,
+  game,
+  progress,
+  onGuide,
+}: { step: Step; onGuide: (trophyId: string) => void } & Pick<TabProps, 'game' | 'progress'>) {
+  const withGuide = (step.trophyIds ?? [])
+    .map((id) => trophyById(game, id))
+    .find((t) => t?.guide && isTrophyRevealed(game, t, progress));
+  if (withGuide) return <GuideButton onClick={() => onGuide(withGuide.id)} />;
   return <ExternalHelp links={stepLinks(game, step, (t) => isTrophyRevealed(game, t, progress))} />;
 }
 
@@ -57,6 +73,7 @@ function StepActions({ step, game, progress, actions }: { step: Step } & TabProp
 export function NowTab({ game, progress: p, actions, onTab }: TabProps & { onTab: (t: Tab) => void }) {
   const [chapterSheet, setChapterSheet] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const [guideFor, setGuideFor] = useState<string | null>(null);
 
   const chapter = currentChapter(game, p);
   const step = nextStep(game, p);
@@ -82,10 +99,29 @@ export function NowTab({ game, progress: p, actions, onTab }: TabProps & { onTab
 
   const counters = (
     <div className="counter-list">
-      <ExternalHelp links={chapterCollectibleLinks(game, chapter, collectibleTypes)} />
+      {collectibleTypes.every((type) => itemsIn(game, chapter.id, type.id).length === 0) && (
+        <ExternalHelp links={chapterCollectibleLinks(game, chapter, collectibleTypes)} />
+      )}
       {collectibleTypes.map((type) => {
         const max = chapter.collectibles?.[type.id] ?? 0;
         const value = collectedInChapter(p, chapter.id, type.id);
+        if (itemsIn(game, chapter.id, type.id).length > 0) {
+          return (
+            <div key={type.id} className="item-group">
+              <div className="counter-row">
+                <span>
+                  {type.plural}
+                  {type.missable && <span className="chip chip-warn">verpassbar</span>}
+                </span>
+                <span className="num">
+                  {value}
+                  <small>/{max}</small>
+                </span>
+              </div>
+              <ItemList game={game} progress={p} actions={actions} chapterId={chapter.id} type={type} />
+            </div>
+          );
+        }
         return (
           <div key={type.id} className="counter-row">
             <span>
@@ -170,7 +206,7 @@ export function NowTab({ game, progress: p, actions, onTab }: TabProps & { onTab
           <h3 id="next-h" className="focus-title">{step.title}</h3>
           <HintLadder id={step.id} hints={step.hints} progress={p} onReveal={actions.reveal} />
           <StepTrophies step={step} {...props} />
-          <StepHelp step={step} {...props} />
+          <StepHelp step={step} {...props} onGuide={setGuideFor} />
           <StepActions step={step} {...props} />
         </section>
       ) : (
@@ -198,7 +234,7 @@ export function NowTab({ game, progress: p, actions, onTab }: TabProps & { onTab
                   <div className="step-row-body">
                     <HintLadder id={s.id} hints={s.hints} progress={p} onReveal={actions.reveal} />
                     <StepTrophies step={s} {...props} />
-                    <StepHelp step={s} {...props} />
+                    <StepHelp step={s} {...props} onGuide={setGuideFor} />
                     <StepActions step={s} {...props} />
                   </div>
                 </details>
@@ -307,6 +343,16 @@ export function NowTab({ game, progress: p, actions, onTab }: TabProps & { onTab
             ))}
           </ul>
         </details>
+      )}
+
+      {guideFor && trophyById(game, guideFor)?.guide && (
+        <GuideSheet
+          game={game}
+          trophy={trophyById(game, guideFor)!}
+          progress={p}
+          onEarn={() => actions.toggleTrophy(guideFor)}
+          onClose={() => setGuideFor(null)}
+        />
       )}
 
       {chapterSheet && (

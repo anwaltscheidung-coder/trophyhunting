@@ -4,7 +4,8 @@ import { chapterIndexOf, isTrophyRevealed, missedTrophies, score } from '../lib/
 import type { TabProps } from './GameScreen';
 import { Check, Cup, GRADE_LABEL, Lock } from './Icons';
 import { trophyLinks } from '../lib/links';
-import { ExternalHelp, HintLadder } from './ui';
+import { GuideSheet } from './GuideSheet';
+import { ExternalHelp, GuideButton, HintLadder } from './ui';
 
 type Filter = 'open' | 'missable' | 'earned' | 'all';
 const FILTERS: { id: Filter; label: string }[] = [
@@ -18,6 +19,7 @@ const GRADES: Grade[] = ['platinum', 'gold', 'silver', 'bronze'];
 export function TrophiesTab({ game, progress: p, actions }: TabProps) {
   const [filter, setFilter] = useState<Filter>('open');
   const [open, setOpen] = useState<string | null>(null);
+  const [guideFor, setGuideFor] = useState<string | null>(null);
   const s = score(game, p);
   const missed = new Set(missedTrophies(game, p).map((t) => t.id));
 
@@ -78,12 +80,23 @@ export function TrophiesTab({ game, progress: p, actions }: TabProps) {
             missed={missed.has(t.id)}
             expanded={open === t.id}
             onExpand={() => setOpen(open === t.id ? null : t.id)}
+            onGuide={() => setGuideFor(t.id)}
             game={game}
             progress={p}
             actions={actions}
           />
         ))}
       </ul>
+
+      {guideFor && game.trophies.find((x) => x.id === guideFor)?.guide && (
+        <GuideSheet
+          game={game}
+          trophy={game.trophies.find((x) => x.id === guideFor)!}
+          progress={p}
+          onEarn={() => actions.toggleTrophy(guideFor)}
+          onClose={() => setGuideFor(null)}
+        />
+      )}
     </div>
   );
 }
@@ -93,10 +106,11 @@ function TrophyRow({
   missed,
   expanded,
   onExpand,
+  onGuide,
   game,
   progress: p,
   actions,
-}: TabProps & { trophy: Trophy; missed: boolean; expanded: boolean; onExpand: () => void }) {
+}: TabProps & { trophy: Trophy; missed: boolean; expanded: boolean; onExpand: () => void; onGuide: () => void }) {
   const earned = p.earned.includes(t.id);
   const revealed = isTrophyRevealed(game, t, p);
   const from = chapterIndexOf(game, t.availableFrom);
@@ -113,6 +127,7 @@ function TrophyRow({
           </span>
           <span className="chips">
             {t.missable && <span className="chip chip-warn">{missed ? 'verpasst' : 'verpassbar'}</span>}
+            {t.guide && revealed && <span className="chip chip-accent">Anleitung mit Bildern</span>}
             {from >= 0 && <span className="chip">ab {game.chapters[from].label}</span>}
             {t.rarity !== undefined && <span className="chip">{t.rarity.toLocaleString('de-DE')} %</span>}
           </span>
@@ -142,7 +157,7 @@ function TrophyRow({
           ) : (
             <>
               <HintLadder id={t.id} hints={t.hints} progress={p} onReveal={actions.reveal} />
-              <ExternalHelp links={trophyLinks(game, t)} />
+              {t.guide ? <GuideButton onClick={onGuide} /> : <ExternalHelp links={trophyLinks(game, t)} />}
               {missed && t.recovery && <p className="small warn-text">{t.recovery}</p>}
             </>
           )}

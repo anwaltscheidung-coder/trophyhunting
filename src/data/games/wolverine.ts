@@ -1,4 +1,5 @@
 import type { Chapter, Game, Trophy } from '../../types';
+import { placeholderShot } from '../illustrations';
 
 /**
  * DUMMY-DATEN für Marvel's Wolverine (PS5, September 2026).
@@ -432,6 +433,73 @@ const trophies: Trophy[] = [
       { level: 2, text: 'Nach ein paar Anzug-Upgrades zurückkehren, dann ist Adamantium gut machbar.' },
     ],
     rarity: 33.3,
+    // Aufbau einer ausführlichen Anleitung. Texte und Bilder sind Platzhalter
+    // und werden beim Import durch die Inhalte aus dem PowerPyx-Guide ersetzt.
+    guide: {
+      source: { name: 'PowerPyx', url: 'https://www.powerpyx.com/marvels-wolverine-trophy-guide-roadmap/', usage: 'licensed' },
+      placeholder: true,
+      summary:
+        'Eine Albtraum-Prüfung mit der Bestwertung Adamantium abschliessen. Am einfachsten ist die erste Prüfung, sobald du ein paar Anzüge hergestellt hast.',
+      time: 'ca. 20 Min.',
+      difficulty: 3,
+      prerequisites: [
+        'Albtraum-Hütte freigeschaltet (zweite Albtraum-Tür)',
+        'Mindestens 3 Anzüge hergestellt',
+        'Berserker-Wut freigeschaltet',
+      ],
+      sections: [
+        {
+          kind: 'step',
+          title: 'Prüfung 1 in der Albtraum-Hütte wählen',
+          text: 'In der Albtraum-Hütte führt die erste Tür links zu Prüfung 1. Sie hat die wenigsten Gegnerwellen.',
+          images: [
+            {
+              src: placeholderShot('Albtraum-Hütte: Auswahl der Prüfung'),
+              alt: 'Auswahl der Albtraum-Prüfungen in der Hütte',
+              caption: 'Die erste Tür links',
+              credit: 'PowerPyx',
+              marks: [{ x: 26, y: 50, r: 6, label: 'Prüfung 1' }],
+            },
+          ],
+        },
+        {
+          kind: 'step',
+          title: 'Wellen 1 bis 3: Wut aufbauen, nicht verbrauchen',
+          text: 'Pariere so viel wie möglich und weiche aus, statt zu blocken. Die Wut-Leiste unten links soll voll sein, wenn die letzte Welle beginnt.',
+          images: [
+            {
+              src: placeholderShot('Kampf mit voller Wut-Leiste'),
+              alt: 'Kampfszene mit Wut-Leiste unten links',
+              caption: 'Die Wut-Leiste unten links',
+              credit: 'PowerPyx',
+              marks: [{ x: 14, y: 86, r: 7, label: 'Wut-Leiste' }],
+            },
+          ],
+        },
+        {
+          kind: 'tip',
+          title: 'Paraden zählen doppelt',
+          text: 'Jede perfekte Parade gibt Bonuspunkte für die Wertung und zählt gleichzeitig für „Parry Perfected“.',
+        },
+        {
+          kind: 'step',
+          title: 'Letzte Welle: Berserker-Wut zünden',
+          text: 'Sobald der schwere Gegner erscheint, sofort die Berserker-Wut auslösen. In der Wut erleidest du kaum Schaden, und die Welle ist schnell vorbei.',
+          images: [
+            {
+              src: placeholderShot('Letzte Welle mit schwerem Gegner'),
+              alt: 'Letzte Gegnerwelle mit einem schweren Gegner',
+              credit: 'PowerPyx',
+            },
+          ],
+        },
+        {
+          kind: 'warning',
+          title: 'Ein schlechter Lauf lohnt sich nicht',
+          text: 'Die Wertung hängt von Zeit und erlittenem Schaden ab. Läuft die erste Welle schlecht, lieber gleich neu starten.',
+        },
+      ],
+    },
   },
   {
     id: 'memory',
@@ -669,14 +737,14 @@ export const wolverine: Game = {
       trophyIds: ['level36', 'armory', 'helix', 'spiral', 'parry'],
     },
   ],
+  // Videos als Rückfallebene, solange es für eine Trophäe noch keine
+  // Anleitung in der App gibt. Guide-Inhalte selbst kommen per Import.
   links: {
-    trophyGuide: { source: 'PowerPyx', url: 'https://www.powerpyx.com/marvels-wolverine-trophy-guide-roadmap/' },
-    collectibleGuide: { source: 'PowerPyx', url: 'https://www.powerpyx.com/marvels-wolverine-all-collectible-locations-guide/' },
     videoQuery: "Marvel's Wolverine",
   },
   sources: [
-    { name: 'PowerPyx: Trophy Guide & Roadmap', url: 'https://www.powerpyx.com/marvels-wolverine-trophy-guide-roadmap/', usage: 'link' },
-    { name: 'PowerPyx: Fundorte aller Sammelobjekte', url: 'https://www.powerpyx.com/marvels-wolverine-all-collectible-locations-guide/', usage: 'link' },
+    { name: 'PowerPyx (Partner): Trophy Guide, Texte und Bilder', url: 'https://www.powerpyx.com/marvels-wolverine-trophy-guide-roadmap/', usage: 'licensed' },
+    { name: 'PowerPyx (Partner): Fundorte der Sammelobjekte', url: 'https://www.powerpyx.com/marvels-wolverine-all-collectible-locations-guide/', usage: 'licensed' },
     { name: 'YouTube: Video-Anleitungen (Suche)', url: 'https://www.youtube.com/results?search_query=Marvel%27s+Wolverine+trophy+guide', usage: 'link' },
     { name: 'Platinpfad-Redaktion (Hinweise)', usage: 'own' },
   ],

@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import type { ExternalLink, Game, GameProgress, Hint, HintLevel, Step, Trophy } from '../types';
 import { isTrophyRevealed, visibleHintLevel } from '../lib/navigator';
-import { Book, Cup, External, Eye, Minus, Plus, Play } from './Icons';
+import { Book, ChevronRight, Cup, External, Eye, Minus, Plus, Play } from './Icons';
 
 export function ProgressRing({ percent, size = 56, stroke = 5, label }: { percent: number; size?: number; stroke?: number; label?: string }) {
   const r = (size - stroke) / 2;
@@ -200,7 +200,7 @@ export function ExternalHelp({ links }: { links: ExternalLink[] }) {
   return (
     <details className="ext">
       <summary>
-        <External size={16} /> Mehr Hilfe: Guide &amp; Videos
+        <External size={16} /> {links.every((l) => l.kind === 'video') ? 'Video-Anleitungen' : 'Mehr Hilfe: Guide & Videos'}
       </summary>
       <ul className="ext-list">
         {links.map((l) => (
@@ -213,7 +213,20 @@ export function ExternalHelp({ links }: { links: ExternalLink[] }) {
           </li>
         ))}
       </ul>
-      <p className="small muted">Externe Seiten haben keinen Spoiler-Schutz. Guide-Links springen direkt zur passenden Stelle.</p>
+      <p className="small muted">Externe Seiten haben keinen Spoiler-Schutz.</p>
     </details>
+  );
+}
+
+export function GuideButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button type="button" className="guide-btn" onClick={onClick}>
+      <Book size={18} />
+      <span>
+        <strong>Anleitung mit Bildern</strong>
+        <small>Schritt für Schritt, mit Screenshots</small>
+      </span>
+      <ChevronRight size={18} />
+    </button>
   );
 }
