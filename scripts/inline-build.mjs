@@ -33,7 +33,9 @@ const title = head.match(/<title>.*?<\/title>/)[0];
 const fonts = [...head.matchAll(/<link\s+rel="(?:preconnect|stylesheet)"\s+href="https:\/\/fonts[^>]*>/g)].map((m) =>
   m[0].replace(/\s+/g, ' '),
 );
-const fragment = [title, ...fonts, style, '<div id="root"></div>', script].join('\n');
+// Body ohne das Modul-Script: Root mit Startmeldung, <noscript>, Fehleranzeige.
+const body = html.match(/<body>([\s\S]*?)<\/body>/)[1].trim();
+const fragment = [title, ...fonts, style, body, script].join('\n');
 
 const out = join(root, 'preview');
 mkdirSync(out, { recursive: true });

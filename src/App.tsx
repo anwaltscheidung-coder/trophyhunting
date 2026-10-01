@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { gameById, games } from './data';
 import { demoProgress } from './data/demoProgress';
-import { newProgress, platinumTrophy, toggleEarned, trophyById } from './lib/navigator';
+import { newProgress, normalizeProgress, platinumTrophy, toggleEarned, trophyById } from './lib/navigator';
 import { loadAll, saveAll } from './lib/storage';
 import type { Game, GameProgress, HintLevel, Trophy } from './types';
 import { Celebration } from './components/Celebration';
@@ -42,7 +42,11 @@ export function App() {
   }, []);
 
   const hideToast = useCallback(() => setToast(null), []);
-  const progressOf = (id: string) => store[id] ?? newProgress();
+  const progressOf = (id: string) => {
+    const p = store[id] ?? newProgress();
+    const g = gameById(id);
+    return g ? normalizeProgress(g, p) : p;
+  };
 
   const actionsFor = (game: Game): GameActions => {
     const update = (fn: (p: GameProgress) => GameProgress) =>

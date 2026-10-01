@@ -23,6 +23,11 @@
   --cup-shine: rgba(255, 255, 255, 0.55);
   --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
   --backdrop: rgba(5, 8, 15, 0.6);
+  --warn-line: #9f5d5b;
+  --accent-line: #5c7da4;
+  --ok-line: #498676;
+  --topbar-bg: rgba(14, 19, 32, 0.9);
+  --tabbar-bg: rgba(22, 29, 45, 0.95);
 
   --font-display: 'Chakra Petch', 'Segoe UI', system-ui, sans-serif;
   --font-body: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -60,6 +65,11 @@
     --cup-shine: rgba(255, 255, 255, 0.6);
     --shadow: 0 10px 26px rgba(20, 32, 56, 0.09);
     --backdrop: rgba(20, 28, 44, 0.4);
+    --warn-line: #c9837d;
+    --accent-line: #799cd1;
+    --ok-line: #74a998;
+    --topbar-bg: rgba(242, 244, 248, 0.9);
+    --tabbar-bg: rgba(255, 255, 255, 0.95);
     color-scheme: light;
   }
 }
@@ -84,6 +94,11 @@
   --cup-shine: rgba(255, 255, 255, 0.6);
   --shadow: 0 10px 26px rgba(20, 32, 56, 0.09);
   --backdrop: rgba(20, 28, 44, 0.4);
+  --warn-line: #c9837d;
+  --accent-line: #799cd1;
+  --ok-line: #74a998;
+  --topbar-bg: rgba(242, 244, 248, 0.9);
+  --tabbar-bg: rgba(255, 255, 255, 0.95);
   color-scheme: light;
 }
 
@@ -182,6 +197,28 @@ button {
   text-align: center;
 }
 
+/* Startmeldung und Fehleranzeige: sichtbar, falls die App nicht startet */
+.boot {
+  max-width: 620px;
+  margin: 0 auto;
+  padding-block: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.boot h1 {
+  font-size: var(--step-2);
+}
+.boot pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: var(--step--1);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  margin: 0;
+}
+
 /* ---------- Trophäen-Pokale ---------- */
 .cup {
   flex: none;
@@ -223,7 +260,7 @@ button {
   gap: 12px;
 }
 .card-warn {
-  border-color: color-mix(in srgb, var(--warn) 55%, var(--line));
+  border-color: var(--warn-line);
   background: linear-gradient(var(--warn-soft), var(--warn-soft)), var(--surface);
 }
 .card-warn .card-head {
@@ -242,12 +279,12 @@ button {
 }
 
 .focus {
-  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+  border-color: var(--accent-line);
   box-shadow: var(--shadow);
   padding: 20px;
 }
 .focus-missable {
-  border-color: color-mix(in srgb, var(--warn) 60%, var(--line));
+  border-color: var(--warn-line);
 }
 .focus-title {
   font-size: var(--step-2) !important;
@@ -384,7 +421,7 @@ button {
   border-radius: 999px;
 }
 .tchip-earned {
-  border-color: color-mix(in srgb, var(--ok) 50%, var(--line));
+  border-color: var(--ok-line);
 }
 
 .bar {
@@ -504,7 +541,7 @@ button {
   gap: 14px;
   padding: 16px;
   border-radius: var(--radius);
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  border: 1px solid var(--accent-line);
   background: var(--surface);
   box-shadow: var(--shadow);
   cursor: pointer;
@@ -647,7 +684,7 @@ button {
   padding-block: 8px;
   margin-inline: -16px;
   padding-inline: 8px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  background: var(--topbar-bg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
@@ -681,7 +718,7 @@ button {
   justify-content: center;
   gap: 4px;
   padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  background: var(--tabbar-bg);
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--line);
 }
@@ -905,7 +942,7 @@ button {
   font-weight: 700;
 }
 .counter-full {
-  border-color: color-mix(in srgb, var(--ok) 55%, var(--line));
+  border-color: var(--ok-line);
 }
 .counter-full .counter-value {
   color: var(--ok);
@@ -1197,7 +1234,7 @@ button {
   background: var(--surface);
 }
 .trophy-missed {
-  border-color: color-mix(in srgb, var(--warn) 45%, var(--line));
+  border-color: var(--warn-line);
 }
 .trophy-main {
   display: flex;

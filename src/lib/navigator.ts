@@ -32,6 +32,13 @@ export function newProgress(): GameProgress {
   };
 }
 
+/** Kapitelindex in den gültigen Bereich bringen (z. B. nach Guide-Updates). */
+export function normalizeProgress(game: Game, p: GameProgress): GameProgress {
+  const max = game.chapters.length - 1;
+  if (p.chapterIndex >= 0 && p.chapterIndex <= max) return p;
+  return { ...p, chapterIndex: Math.max(0, Math.min(max, p.chapterIndex)) };
+}
+
 export function chapterIndexOf(game: Game, chapterId: string | undefined): number {
   if (!chapterId) return -1;
   return game.chapters.findIndex((c) => c.id === chapterId);

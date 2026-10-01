@@ -14,7 +14,25 @@
     />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <section class="boot" id="pp-boot">
+        <h1>Platinpfad lädt …</h1>
+        <p>Bleibt diese Meldung stehen, läuft hier kein JavaScript. Öffne die Seite bitte direkt in einem Browser wie Chrome, Safari, Edge oder Firefox.</p>
+      </section>
+    </div>
+    <script>
+      // Zeigt Startfehler an, statt eine leere Seite zu hinterlassen (bewusst ES5).
+      (function () {
+        function show(msg) {
+          var boot = document.getElementById('pp-boot');
+          if (!boot) return;
+          boot.innerHTML = '<h1>Platinpfad konnte nicht starten</h1><p>Schick diese Meldung bitte an das Team:</p><pre></pre>';
+          boot.querySelector('pre').textContent = msg + '\n\n' + navigator.userAgent;
+        }
+        window.addEventListener('error', function (e) { show(e.message || String(e)); });
+        window.addEventListener('unhandledrejection', function (e) { show(String(e.reason)); });
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
